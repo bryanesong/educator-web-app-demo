@@ -340,7 +340,7 @@ export class MockDataService {
     const page = params?.page || 1;
     
     // Sort conversations (most recent first by default)
-    let sortedConversations = [...mockConversations];
+    const sortedConversations = [...mockConversations];
     if (params?.ordering?.includes('-start_date_time') || !params?.ordering) {
       sortedConversations.sort((a, b) => 
         new Date(b.start_date_time).getTime() - new Date(a.start_date_time).getTime()

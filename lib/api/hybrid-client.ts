@@ -7,7 +7,7 @@
 
 import { User } from '@supabase/supabase-js';
 import { getUserType, UserType } from '@/lib/auth';
-import { djangoApi, ConversationWithDetails, CharacterStats, ApiResponse } from './django-client';
+import { djangoApi, ConversationWithDetails, CharacterStats, ApiResponse, Child } from './django-client';
 import { MockDataService, MockConversationWithDetails, MockCharacterStats } from './mock-data';
 
 export class HybridApiClient {
@@ -46,7 +46,7 @@ export class HybridApiClient {
           data: mockData,
           status: 200
         };
-      } catch (error) {
+      } catch {
         return {
           error: 'Failed to fetch demo conversations',
           status: 500
@@ -67,7 +67,7 @@ export class HybridApiClient {
           data: mockData,
           status: 200
         };
-      } catch (error) {
+      } catch {
         return {
           error: 'Failed to fetch demo character stats',
           status: 500
@@ -94,7 +94,7 @@ export class HybridApiClient {
           data: mockData,
           status: 200
         };
-      } catch (error) {
+      } catch {
         return {
           error: 'Failed to fetch demo dashboard stats',
           status: 500
@@ -106,7 +106,7 @@ export class HybridApiClient {
     }
   }
 
-  async getChildren(parentId?: number): Promise<ApiResponse<{ children: any[]; count: number }>> {
+  async getChildren(parentId?: number): Promise<ApiResponse<{ children: Child[]; count: number }>> {
     if (this.userType === 'demo') {
       // Demo users: Always return mock data
       try {
@@ -115,7 +115,7 @@ export class HybridApiClient {
           data: mockData,
           status: 200
         };
-      } catch (error) {
+      } catch {
         return {
           error: 'Failed to fetch demo children',
           status: 500

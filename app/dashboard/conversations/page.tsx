@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -159,7 +159,7 @@ export default function ConversationsPage() {
   };
 
   // Fetch data using hybrid API (switches between mock and real data)
-  const fetchData = async () => {
+  const fetchData = useCallback(async () => {
     setLoading(true);
     setError(null);
     
@@ -207,13 +207,13 @@ export default function ConversationsPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [currentPage, pageSize, sortField, sortDirection, user]);
 
   useEffect(() => {
     if (user) {
       fetchData();
     }
-  }, [currentPage, pageSize, sortField, sortDirection, user, fetchData]);
+  }, [fetchData, user]);
 
   // Handle sorting
   const handleSort = (field: SortField) => {

@@ -40,7 +40,6 @@ export default function DashboardPage() {
     totalChildren: 0
   });
   const [loading, setLoading] = useState(true);
-  const [error] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchDashboardData = async () => {
@@ -55,12 +54,13 @@ export default function DashboardPage() {
         if (response.error) {
           throw new Error(response.error);
         }
-        setDashboardStats(response.data || {
+        setDashboardStats({
           totalConversations: 0,
           avgDuration: 0,
           avgMoodScore: 0,
           activeStudents: 0,
-          totalChildren: 0
+          totalChildren: 0,
+          ...response.data
         });
       } catch (err) {
         // setError(err instanceof Error ? err.message : 'Failed to fetch data');

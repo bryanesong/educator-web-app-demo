@@ -184,7 +184,7 @@ export default function AdminPage() {
       setAlerts({ type: 'success', message: 'School created successfully!' });
       
       setTimeout(() => setAlerts(null), 3000);
-    } catch (error) {
+    } catch {
       setAlerts({ type: 'error', message: 'Failed to create school. Please try again.' });
     } finally {
       setIsCreatingSchool(false);
@@ -228,7 +228,7 @@ export default function AdminPage() {
       });
       
       setTimeout(() => setAlerts(null), 10000);
-    } catch (error) {
+    } catch {
       setAlerts({ type: 'error', message: 'Failed to create educator account. Please try again.' });
     } finally {
       setIsCreatingEducator(false);

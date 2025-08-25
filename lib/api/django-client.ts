@@ -8,7 +8,7 @@
 // Base configuration
 const DJANGO_BASE_URL = process.env.NEXT_PUBLIC_DJANGO_URL || 'http://localhost:8000';
 
-export interface ApiResponse<T = any> {
+export interface ApiResponse<T = Record<string, unknown>> {
   data?: T;
   error?: string;
   status: number;
@@ -201,13 +201,17 @@ class DjangoApiClient {
       this.makeRequest(`/api/answers/?question__conversation=${conversationId}`)
     ]);
 
-    if (convResponse.error) return convResponse;
+    if (convResponse.error) return convResponse as ApiResponse<{
+      conversation: Conversation;
+      questions: Question[];
+      answers: Answer[];
+    }>;
 
     return {
       data: {
-        conversation: convResponse.data,
-        questions: questionsResponse.data?.results || [],
-        answers: answersResponse.data?.results || []
+        conversation: convResponse.data as Conversation,
+        questions: (questionsResponse.data as { results: Question[] })?.results || [],
+        answers: (answersResponse.data as { results: Answer[] })?.results || []
       },
       status: 200
     };
@@ -235,6 +239,7 @@ class DjangoApiClient {
     page?: number;
     page_size?: number;
     ordering?: string;
+    defaultSort?: boolean;
   }): Promise<ApiResponse<{
     conversations: ConversationWithDetails[];
     pagination: {
@@ -255,35 +260,53 @@ class DjangoApiClient {
       // For descending date order (most recent first), we need to calculate the correct page
       // from the end of the dataset since Django returns oldest first
       let actualPage = requestedPage;
-      let conversationsResponse;
       
       // First, get the total count to calculate correct pagination
       const countResponse = await this.getConversations({ page: 1, page_size: 1 });
-      if (countResponse.error) return countResponse;
+      if (countResponse.error) return countResponse as unknown as ApiResponse<{
+        conversations: ConversationWithDetails[];
+        pagination: {
+          count: number;
+          next?: string;
+          previous?: string;
+          page: number;
+          page_size: number;
+          total_pages: number;
+        };
+      }>;
       
       const totalCount = countResponse.data?.count || 0;
       const totalPages = Math.ceil(totalCount / pageSize);
       
       // If sorting by date descending (most recent first), reverse the page calculation
       if (params?.ordering?.includes('-start_date_time') || params?.ordering?.includes('-id') || 
-          (!params?.ordering && (params as any)?.defaultSort !== false)) {
+          (!params?.ordering && params?.defaultSort !== false)) {
         // Calculate the page from the end to get most recent first
         actualPage = totalPages - requestedPage + 1;
         if (actualPage < 1) actualPage = 1;
       }
       
-      conversationsResponse = await this.getConversations({
+      const conversationsResponse = await this.getConversations({
         page: actualPage,
         page_size: pageSize
       });
-      if (conversationsResponse.error) return conversationsResponse;
+      if (conversationsResponse.error) return conversationsResponse as unknown as ApiResponse<{
+        conversations: ConversationWithDetails[];
+        pagination: {
+          count: number;
+          next?: string;
+          previous?: string;
+          page: number;
+          page_size: number;
+          total_pages: number;
+        };
+      }>;
 
       let conversations = conversationsResponse.data?.results || [];
-      const conversationsData = conversationsResponse.data;
       
       // If we reversed the page, we need to reverse the conversations order too to maintain chronological order
       if (params?.ordering?.includes('-start_date_time') || params?.ordering?.includes('-id') || 
-          (!params?.ordering && (params as any)?.defaultSort !== false)) {
+          (!params?.ordering && params?.defaultSort !== false)) {
         conversations = conversations.reverse();
       }
       
@@ -292,19 +315,19 @@ class DjangoApiClient {
         conversations.map(async (conv: Conversation) => {
           // Get child details
           const childResponse = await this.makeRequest(`/api/child/${conv.child}/`);
-          const child = childResponse.data;
+          const child = childResponse.data as Child;
 
           // Get latest question for this conversation
           const questionsResponse = await this.makeRequest(
             `/api/questions/?conversation=${conv.id}&ordering=-timestamp&limit=1`
           );
-          const latestQuestion = questionsResponse.data?.results?.[0];
+          const latestQuestion = (questionsResponse.data as { results: Question[] })?.results?.[0];
 
           // Get latest answer
           const answersResponse = await this.makeRequest(
             `/api/answers/?question__conversation=${conv.id}&ordering=-timestamp&limit=1`
           );
-          const latestAnswer = answersResponse.data?.results?.[0];
+          const latestAnswer = (answersResponse.data as { results: Answer[] })?.results?.[0];
 
           // Calculate duration if conversation has ended
           let durationMinutes = 0;
@@ -323,7 +346,7 @@ class DjangoApiClient {
               if (moodMatch) {
                 moodScore = parseFloat(moodMatch[0]);
               }
-            } catch (e) {
+            } catch {
               console.warn('Could not parse mood evaluation:', latestQuestion.mood_evaluation);
             }
           }
@@ -340,7 +363,7 @@ class DjangoApiClient {
             latest_answer: latestAnswer,
             duration_minutes: durationMinutes,
             mood_score: moodScore,
-            topics_discussed: this.extractTopicsFromConversation(latestQuestion, latestAnswer)
+            topics_discussed: this.extractTopicsFromConversation(latestQuestion)
           } as ConversationWithDetails;
         })
       );
@@ -354,8 +377,8 @@ class DjangoApiClient {
           conversations: enhancedConversations,
           pagination: {
             count: totalCount,
-            next: requestedPage < finalTotalPages ? `page=${requestedPage + 1}` : null,
-            previous: requestedPage > 1 ? `page=${requestedPage - 1}` : null,
+            next: requestedPage < finalTotalPages ? `page=${requestedPage + 1}` : undefined,
+            previous: requestedPage > 1 ? `page=${requestedPage - 1}` : undefined,
             page: requestedPage,
             page_size: finalPageSize,
             total_pages: finalTotalPages
@@ -363,7 +386,7 @@ class DjangoApiClient {
         },
         status: 200
       };
-    } catch (error) {
+    } catch {
       return {
         error: 'Failed to fetch enhanced conversations',
         status: 500
@@ -418,7 +441,7 @@ class DjangoApiClient {
   }
 
   // Helper method to extract topics from conversation
-  private extractTopicsFromConversation(question?: Question, answer?: Answer): string[] {
+  private extractTopicsFromConversation(question?: Question): string[] {
     const topics: string[] = [];
     
     if (question?.text) {
@@ -442,17 +465,18 @@ class DjangoApiClient {
     try {
       // Get all conversations grouped by character
       const conversationsResponse = await this.getConversations();
-      if (conversationsResponse.error) return conversationsResponse;
+      if (conversationsResponse.error) return conversationsResponse as unknown as ApiResponse<CharacterStats[]>;
 
-      const conversations = conversationsResponse.data || [];
+      const conversations = (conversationsResponse.data as { results: Conversation[] })?.results || [];
       
       // Group conversations by character
       const characterGroups: Record<string, Conversation[]> = {};
       conversations.forEach((conv: Conversation) => {
-        if (!characterGroups[conv.character]) {
-          characterGroups[conv.character] = [];
+        const character = this.extractCharacterFromContext(conv.context) || 'koko-panda';
+        if (!characterGroups[character]) {
+          characterGroups[character] = [];
         }
-        characterGroups[conv.character].push(conv);
+        characterGroups[character].push(conv);
       });
 
       // Calculate stats for each character
@@ -464,7 +488,7 @@ class DjangoApiClient {
           const questionsResponse = await this.makeRequest(
             `/api/questions/?conversation=${conv.id}`
           );
-          const questions = questionsResponse.data?.results || [];
+          const questions = (questionsResponse.data as { results: Question[] })?.results || [];
           questions.forEach((q: Question) => {
             if (q.mood_evaluation) {
               try {
@@ -472,7 +496,7 @@ class DjangoApiClient {
                 if (moodMatch) {
                   moodScores.push(parseFloat(moodMatch[0]));
                 }
-              } catch (e) {
+              } catch {
                 // Ignore parsing errors
               }
             }
@@ -507,7 +531,7 @@ class DjangoApiClient {
         data: stats,
         status: 200
       };
-    } catch (error) {
+    } catch {
       return {
         error: 'Failed to calculate character statistics',
         status: 500
@@ -529,10 +553,10 @@ class DjangoApiClient {
         this.makeRequest('/api/child/')
       ]);
 
-      const conversationsData = conversationsResponse.data;
+      const conversationsData = conversationsResponse.data as { results: Conversation[]; count: number };
       const conversations = conversationsData?.results || [];
       const totalConversations = conversationsData?.count || 0;
-      const children = childrenResponse.data?.results || [];
+      const children = (childrenResponse.data as { results: Child[]; count: number })?.results || [];
 
       // Calculate average duration from sample conversations
       const durations = conversations
@@ -553,7 +577,7 @@ class DjangoApiClient {
         const questionsResponse = await this.makeRequest(
           `/api/questions/?conversation=${conv.id}&limit=3`
         );
-        const questions = questionsResponse.data?.results || [];
+        const questions = (questionsResponse.data as { results: Question[] })?.results || [];
         questions.forEach((q: Question) => {
           if (q.mood_evaluation) {
             try {
@@ -561,7 +585,7 @@ class DjangoApiClient {
               if (moodMatch) {
                 allMoodScores.push(parseFloat(moodMatch[0]));
               }
-            } catch (e) {
+            } catch {
               // Ignore parsing errors
             }
           }
@@ -589,7 +613,7 @@ class DjangoApiClient {
         },
         status: 200
       };
-    } catch (error) {
+    } catch {
       return {
         error: 'Failed to fetch dashboard statistics',
         status: 500
