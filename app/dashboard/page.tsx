@@ -177,7 +177,23 @@ export default function DashboardPage() {
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="day" />
                   <YAxis domain={[0, 10]} />
-                  <Tooltip />
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: 'hsl(var(--card))',
+                      border: '1px solid hsl(var(--border))',
+                      borderRadius: '6px',
+                      color: 'hsl(var(--card-foreground))',
+                      fontSize: '14px',
+                      padding: '8px 12px',
+                      boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+                    }}
+                    labelStyle={{
+                      color: 'hsl(var(--muted-foreground))',
+                      fontWeight: '500'
+                    }}
+                    formatter={(value: number) => [`${value}/10`, 'Mood Score']}
+                    labelFormatter={(label: string) => `${label}`}
+                  />
                   <Line type="monotone" dataKey="mood" stroke="hsl(var(--primary))" strokeWidth={2} />
                 </LineChart>
               </ResponsiveContainer>
@@ -199,7 +215,23 @@ export default function DashboardPage() {
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis dataKey="name" />
                   <YAxis />
-                  <Tooltip />
+                  <Tooltip
+                    contentStyle={{
+                      backgroundColor: 'hsl(var(--card))',
+                      border: '1px solid hsl(var(--border))',
+                      borderRadius: '6px',
+                      color: 'hsl(var(--card-foreground))',
+                      fontSize: '14px',
+                      padding: '8px 12px',
+                      boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+                    }}
+                    labelStyle={{
+                      color: 'hsl(var(--muted-foreground))',
+                      fontWeight: '500'
+                    }}
+                    formatter={(value: number) => [`${value}%`, 'Engagement']}
+                    labelFormatter={(label: string) => `${label}`}
+                  />
                   <Bar dataKey="value" fill="hsl(var(--primary))" />
                 </BarChart>
               </ResponsiveContainer>

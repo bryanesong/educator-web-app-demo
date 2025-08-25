@@ -93,8 +93,8 @@ export function Sidebar() {
           );
         })}
         
-        {/* Admin Navigation Section - Only for admin users */}
-        {userType === 'admin' && (
+        {/* Admin Navigation Section - Only for admin and demo-admin users */}
+        {(userType === 'admin' || userType === 'demo-admin') && (
           <>
             <div className="my-4 border-t border-border"></div>
             <div className="mb-2">
@@ -135,7 +135,7 @@ export function Sidebar() {
             </p>
             {userType !== 'educator' && (
               <span className="text-xs bg-primary/10 text-primary px-1.5 py-0.5 rounded capitalize">
-                {userType}
+                {userType === 'demo-admin' ? 'Demo Admin' : userType}
               </span>
             )}
           </div>

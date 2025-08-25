@@ -92,7 +92,7 @@ export default function AdminPage() {
       }
       
       const userType = await getUserType(user);
-      if (userType !== 'admin') {
+      if (userType !== 'admin' && userType !== 'demo-admin') {
         // Only admin users can access the admin portal
         router.push('/dashboard');
         return;

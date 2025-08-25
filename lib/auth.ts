@@ -63,7 +63,7 @@ export async function getCurrentUser(): Promise<User | null> {
 }
 
 // User type definitions
-export type UserType = 'demo' | 'educator' | 'admin';
+export type UserType = 'demo' | 'educator' | 'admin' | 'demo-admin';
 
 export async function getUserType(user: User | null): Promise<UserType> {
   if (!user) return 'demo';
@@ -73,6 +73,11 @@ export async function getUserType(user: User | null): Promise<UserType> {
   const permissions = metadata.permissions || [];
   const adminLevel = metadata.admin_level;
   const email = user.email?.toLowerCase() || '';
+  
+  // Check for demo admin users (special case)
+  if (email === 'admin@school.edu') {
+    return 'demo-admin';
+  }
   
   // Check for admin users first (highest authority)
   if (

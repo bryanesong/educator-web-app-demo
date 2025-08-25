@@ -38,7 +38,7 @@ export class HybridApiClient {
       total_pages: number;
     };
   }>> {
-    if (this.userType === 'demo') {
+    if (this.userType === 'demo' || this.userType === 'demo-admin') {
       // Demo users: Always return mock data
       try {
         const mockData = await MockDataService.getConversationsWithAnalytics(params);
@@ -59,7 +59,7 @@ export class HybridApiClient {
   }
 
   async getCharacterStats(): Promise<ApiResponse<CharacterStats[] | MockCharacterStats[]>> {
-    if (this.userType === 'demo') {
+    if (this.userType === 'demo' || this.userType === 'demo-admin') {
       // Demo users: Always return mock data
       try {
         const mockData = await MockDataService.getCharacterStats();
@@ -86,7 +86,7 @@ export class HybridApiClient {
     activeStudents: number;
     totalChildren?: number;
   }>> {
-    if (this.userType === 'demo') {
+    if (this.userType === 'demo' || this.userType === 'demo-admin') {
       // Demo users: Always return mock data
       try {
         const mockData = await MockDataService.getDashboardStats();
@@ -107,7 +107,7 @@ export class HybridApiClient {
   }
 
   async getChildren(parentId?: number): Promise<ApiResponse<{ children: Child[]; count: number }>> {
-    if (this.userType === 'demo') {
+    if (this.userType === 'demo' || this.userType === 'demo-admin') {
       // Demo users: Always return mock data
       try {
         const mockData = await MockDataService.getChildren();
@@ -144,7 +144,7 @@ export class HybridApiClient {
     page_size?: number;
     ordering?: string;
   }) {
-    if (this.userType === 'demo') {
+    if (this.userType === 'demo' || this.userType === 'demo-admin') {
       return {
         error: 'Not available in demo mode',
         status: 403
@@ -154,7 +154,7 @@ export class HybridApiClient {
   }
 
   async getConversationDetails(conversationId: number) {
-    if (this.userType === 'demo') {
+    if (this.userType === 'demo' || this.userType === 'demo-admin') {
       return {
         error: 'Not available in demo mode',
         status: 403
@@ -164,7 +164,7 @@ export class HybridApiClient {
   }
 
   async getMoodMeterCoordinates(childId: number) {
-    if (this.userType === 'demo') {
+    if (this.userType === 'demo' || this.userType === 'demo-admin') {
       return {
         error: 'Not available in demo mode',
         status: 403
@@ -174,7 +174,7 @@ export class HybridApiClient {
   }
 
   async getTodaysChatHistory(childId: number) {
-    if (this.userType === 'demo') {
+    if (this.userType === 'demo' || this.userType === 'demo-admin') {
       return {
         error: 'Not available in demo mode',
         status: 403
@@ -184,7 +184,7 @@ export class HybridApiClient {
   }
 
   async getTodaysEmotions(childId: number) {
-    if (this.userType === 'demo') {
+    if (this.userType === 'demo' || this.userType === 'demo-admin') {
       return {
         error: 'Not available in demo mode',
         status: 403
@@ -194,7 +194,7 @@ export class HybridApiClient {
   }
 
   async getUsageStatistics(childId: number) {
-    if (this.userType === 'demo') {
+    if (this.userType === 'demo' || this.userType === 'demo-admin') {
       return {
         error: 'Not available in demo mode',
         status: 403

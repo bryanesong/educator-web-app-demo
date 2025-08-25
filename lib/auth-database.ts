@@ -20,7 +20,7 @@ export interface WebAppAccount {
   notes?: string
 }
 
-export type UserType = 'demo' | 'educator' | 'admin'
+export type UserType = 'demo' | 'educator' | 'admin' | 'demo-admin'
 
 /**
  * Get user type from database table (when available) or fallback to auth metadata
@@ -75,6 +75,11 @@ export function getUserTypeFromMetadata(user: User | null): UserType {
   const permissions = metadata.permissions || []
   const adminLevel = metadata.admin_level
   const email = user.email?.toLowerCase() || ''
+  
+  // Check for demo admin users (special case)
+  if (email === 'admin@school.edu') {
+    return 'demo-admin'
+  }
   
   // Check for admin users first (highest authority)
   if (
@@ -205,8 +210,9 @@ export async function hasPermission(user: User | null, permission: string): Prom
 export async function syncAuthMetadataToDatabase(user: User): Promise<WebAppAccount | null> {
   const metadata = user.user_metadata || {}
   
+  const userType = getUserTypeFromMetadata(user);
   const accountData: Partial<WebAppAccount> = {
-    account_type: getUserTypeFromMetadata(user),
+    account_type: userType === 'demo-admin' ? 'demo' : userType,
     role: metadata.role || 'educator',
     school: metadata.school,
     district: metadata.district,
