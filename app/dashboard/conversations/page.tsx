@@ -9,101 +9,101 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Search, MessageCircle, Heart, Brain, Play, Loader2, ChevronUp, ChevronDown, Filter, ArrowUpDown } from 'lucide-react';
-import { getCharacterByLegacyName, getAllCharacters } from '@/lib/characters';
+import { getAllCharacters } from '@/lib/characters';
 import { ConversationWithDetails, CharacterStats } from '@/lib/api/django-client';
 import { hybridApi } from '@/lib/api/hybrid-client';
 import { useAuth } from '@/hooks/use-auth';
 import Image from 'next/image';
 
-const mockConversations = [
-  {
-    id: '1',
-    studentName: 'Emma Wilson',
-    characterName: 'Koko the Panda',
-    characterId: 'koko-panda',
-    timestamp: new Date('2024-08-14T10:30:00'),
-    duration: '12 minutes',
-    moodScore: 8.5,
-    topicsDiscussed: ['friendship', 'sharing', 'emotions'],
-    summary: 'Emma talked about making new friends at school and learned about sharing toys with Koko.',
-  },
-  {
-    id: '2',
-    studentName: 'Liam Johnson',
-    characterName: 'Mochi the Cat',
-    characterId: 'mochi-cat',
-    timestamp: new Date('2024-08-14T09:15:00'),
-    duration: '8 minutes',
-    moodScore: 7.2,
-    topicsDiscussed: ['adventure', 'curiosity', 'exploration'],
-    summary: 'Liam went on playful adventures and explored cozy learning spaces with Mochi.',
-  },
-  {
-    id: '3',
-    studentName: 'Sofia Garcia',
-    characterName: 'Charlie the Dog',
-    characterId: 'charlie-dog',
-    timestamp: new Date('2024-08-14T11:45:00'),
-    duration: '15 minutes',
-    moodScore: 9.1,
-    topicsDiscussed: ['friendship', 'loyalty', 'playing'],
-    summary: 'Sofia learned about making friends and being loyal through energetic games with Charlie.',
-  },
-  {
-    id: '4',
-    studentName: 'Noah Brown',
-    characterName: 'Ravi the Fox',
-    characterId: 'ravi-fox',
-    timestamp: new Date('2024-08-14T14:20:00'),
-    duration: '6 minutes',
-    moodScore: 6.8,
-    topicsDiscussed: ['critical thinking', 'problem solving', 'different perspectives'],
-    summary: 'Noah explored different ways of thinking and had a friendly debate about perspectives with Ravi.',
-  },
-  {
-    id: '5',
-    studentName: 'Ava Martinez',
-    characterName: 'Nova the Owl',
-    characterId: 'nova-owl',
-    timestamp: new Date('2024-08-14T13:15:00'),
-    duration: '10 minutes',
-    moodScore: 8.7,
-    topicsDiscussed: ['academic learning', 'science', 'discovery'],
-    summary: 'Ava discovered fascinating science concepts and had emotional check-ins with Nova.',
-  },
-  {
-    id: '6',
-    studentName: 'Ethan Davis',
-    characterName: 'Dr. Clover the Goat',
-    characterId: 'dr-clover-goat',
-    timestamp: new Date('2024-08-14T15:30:00'),
-    duration: '14 minutes',
-    moodScore: 8.9,
-    topicsDiscussed: ['emotional guidance', 'validation', 'feelings'],
-    summary: 'Ethan received compassionate emotional support and validation for his feelings with Dr. Clover.',
-  },
-  {
-    id: '7',
-    studentName: 'Maya Kim',
-    characterName: 'Zenzo the Sloth',
-    characterId: 'zenzo-sloth',
-    timestamp: new Date('2024-08-14T16:45:00'),
-    duration: '7 minutes',
-    moodScore: 9.2,
-    topicsDiscussed: ['mindfulness', 'patience', 'breathing'],
-    summary: 'Maya learned mindfulness techniques and practiced slow, thoughtful breathing with Zenzo.',
-  },
-];
+// const mockConversations = [
+//   {
+//     id: '1',
+//     studentName: 'Emma Wilson',
+//     characterName: 'Koko the Panda',
+//     characterId: 'koko-panda',
+//     timestamp: new Date('2024-08-14T10:30:00'),
+//     duration: '12 minutes',
+//     moodScore: 8.5,
+//     topicsDiscussed: ['friendship', 'sharing', 'emotions'],
+//     summary: 'Emma talked about making new friends at school and learned about sharing toys with Koko.',
+//   },
+//   {
+//     id: '2',
+//     studentName: 'Liam Johnson',
+//     characterName: 'Mochi the Cat',
+//     characterId: 'mochi-cat',
+//     timestamp: new Date('2024-08-14T09:15:00'),
+//     duration: '8 minutes',
+//     moodScore: 7.2,
+//     topicsDiscussed: ['adventure', 'curiosity', 'exploration'],
+//     summary: 'Liam went on playful adventures and explored cozy learning spaces with Mochi.',
+//   },
+//   {
+//     id: '3',
+//     studentName: 'Sofia Garcia',
+//     characterName: 'Charlie the Dog',
+//     characterId: 'charlie-dog',
+//     timestamp: new Date('2024-08-14T11:45:00'),
+//     duration: '15 minutes',
+//     moodScore: 9.1,
+//     topicsDiscussed: ['friendship', 'loyalty', 'playing'],
+//     summary: 'Sofia learned about making friends and being loyal through energetic games with Charlie.',
+//   },
+//   {
+//     id: '4',
+//     studentName: 'Noah Brown',
+//     characterName: 'Ravi the Fox',
+//     characterId: 'ravi-fox',
+//     timestamp: new Date('2024-08-14T14:20:00'),
+//     duration: '6 minutes',
+//     moodScore: 6.8,
+//     topicsDiscussed: ['critical thinking', 'problem solving', 'different perspectives'],
+//     summary: 'Noah explored different ways of thinking and had a friendly debate about perspectives with Ravi.',
+//   },
+//   {
+//     id: '5',
+//     studentName: 'Ava Martinez',
+//     characterName: 'Nova the Owl',
+//     characterId: 'nova-owl',
+//     timestamp: new Date('2024-08-14T13:15:00'),
+//     duration: '10 minutes',
+//     moodScore: 8.7,
+//     topicsDiscussed: ['academic learning', 'science', 'discovery'],
+//     summary: 'Ava discovered fascinating science concepts and had emotional check-ins with Nova.',
+//   },
+//   {
+//     id: '6',
+//     studentName: 'Ethan Davis',
+//     characterName: 'Dr. Clover the Goat',
+//     characterId: 'dr-clover-goat',
+//     timestamp: new Date('2024-08-14T15:30:00'),
+//     duration: '14 minutes',
+//     moodScore: 8.9,
+//     topicsDiscussed: ['emotional guidance', 'validation', 'feelings'],
+//     summary: 'Ethan received compassionate emotional support and validation for his feelings with Dr. Clover.',
+//   },
+//   {
+//     id: '7',
+//     studentName: 'Maya Kim',
+//     characterName: 'Zenzo the Sloth',
+//     characterId: 'zenzo-sloth',
+//     timestamp: new Date('2024-08-14T16:45:00'),
+//     duration: '7 minutes',
+//     moodScore: 9.2,
+//     topicsDiscussed: ['mindfulness', 'patience', 'breathing'],
+//     summary: 'Maya learned mindfulness techniques and practiced slow, thoughtful breathing with Zenzo.',
+//   },
+// ];
 
-const mockCharacterStats = [
-  { characterId: 'koko-panda', character: 'Koko the Panda', conversations: 145, avgMood: 8.2, favoriteTopic: 'Emotional Support' },
-  { characterId: 'mochi-cat', character: 'Mochi the Cat', conversations: 98, avgMood: 7.8, favoriteTopic: 'Adventure Learning' },
-  { characterId: 'charlie-dog', character: 'Charlie the Dog', conversations: 132, avgMood: 8.5, favoriteTopic: 'Social Skills' },
-  { characterId: 'ravi-fox', character: 'Ravi the Fox', conversations: 89, avgMood: 8.0, favoriteTopic: 'Critical Thinking' },
-  { characterId: 'nova-owl', character: 'Nova the Owl', conversations: 76, avgMood: 8.3, favoriteTopic: 'Academic Learning' },
-  { characterId: 'dr-clover-goat', character: 'Dr. Clover the Goat', conversations: 67, avgMood: 8.6, favoriteTopic: 'Emotional Counseling' },
-  { characterId: 'zenzo-sloth', character: 'Zenzo the Sloth', conversations: 43, avgMood: 9.1, favoriteTopic: 'Mindfulness' },
-];
+// const mockCharacterStats = [
+//   { characterId: 'koko-panda', character: 'Koko the Panda', conversations: 145, avgMood: 8.2, favoriteTopic: 'Emotional Support' },
+//   { characterId: 'mochi-cat', character: 'Mochi the Cat', conversations: 98, avgMood: 7.8, favoriteTopic: 'Adventure Learning' },
+//   { characterId: 'charlie-dog', character: 'Charlie the Dog', conversations: 132, avgMood: 8.5, favoriteTopic: 'Social Skills' },
+//   { characterId: 'ravi-fox', character: 'Ravi the Fox', conversations: 89, avgMood: 8.0, favoriteTopic: 'Critical Thinking' },
+//   { characterId: 'nova-owl', character: 'Nova the Owl', conversations: 76, avgMood: 8.3, favoriteTopic: 'Academic Learning' },
+//   { characterId: 'dr-clover-goat', character: 'Dr. Clover the Goat', conversations: 67, avgMood: 8.6, favoriteTopic: 'Emotional Counseling' },
+//   { characterId: 'zenzo-sloth', character: 'Zenzo the Sloth', conversations: 43, avgMood: 9.1, favoriteTopic: 'Mindfulness' },
+// ];
 
 type SortField = 'student' | 'character' | 'date' | 'time' | 'duration' | 'mood';
 type SortDirection = 'asc' | 'desc';
@@ -213,7 +213,7 @@ export default function ConversationsPage() {
     if (user) {
       fetchData();
     }
-  }, [currentPage, pageSize, sortField, sortDirection, user]);
+  }, [currentPage, pageSize, sortField, sortDirection, user, fetchData]);
 
   // Handle sorting
   const handleSort = (field: SortField) => {
@@ -265,10 +265,10 @@ export default function ConversationsPage() {
     return character?.image || '/assets/characters/koko-panda.gif';
   };
 
-  const getCharacterName = (characterId: string) => {
-    const character = getAllCharacters().find(c => c.id === characterId);
-    return character?.name || 'Unknown';
-  };
+  // const getCharacterName = (characterId: string) => {
+  //   const character = getAllCharacters().find(c => c.id === characterId);
+  //   return character?.name || 'Unknown';
+  // };
 
   const getCharacterImageClasses = (characterId: string) => {
     // Legacy characters (panda, cat, dog) are naturally larger and need scaling down and repositioning

@@ -25,7 +25,7 @@ import {
   Loader2
 } from 'lucide-react';
 import { useAuth } from '@/hooks/use-auth';
-import { getUserType, UserType } from '@/lib/auth';
+import { getUserType } from '@/lib/auth';
 import { useRouter } from 'next/navigation';
 
 interface School {
@@ -65,7 +65,6 @@ export default function AdminPage() {
   // Form states
   const [isCreatingSchool, setIsCreatingSchool] = useState(false);
   const [isCreatingEducator, setIsCreatingEducator] = useState(false);
-  const [selectedSchool, setSelectedSchool] = useState<string>('');
   
   // Form data
   const [schoolForm, setSchoolForm] = useState({

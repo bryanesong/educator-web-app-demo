@@ -8,12 +8,12 @@ import { Users, Calendar, BookOpen, TrendingUp, Loader2 } from 'lucide-react';
 import { hybridApi } from '@/lib/api/hybrid-client';
 import { useAuth } from '@/hooks/use-auth';
 
-const mockStats = {
-  totalStudents: 28,
-  activeToday: 24,
-  averageMoodScore: 8.2,
-  attendanceRate: 92,
-};
+// const mockStats = {
+//   totalStudents: 28,
+//   activeToday: 24,
+//   averageMoodScore: 8.2,
+//   attendanceRate: 92,
+// };
 
 const mockMoodData = [
   { day: 'Mon', mood: 7.8 },
@@ -40,7 +40,7 @@ export default function DashboardPage() {
     totalChildren: 0
   });
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [error] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchDashboardData = async () => {
@@ -63,7 +63,7 @@ export default function DashboardPage() {
           totalChildren: 0
         });
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to fetch data');
+        // setError(err instanceof Error ? err.message : 'Failed to fetch data');
         console.error('Dashboard data fetch error:', err);
       } finally {
         setLoading(false);
